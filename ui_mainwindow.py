@@ -2,9 +2,10 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created by: PyQt5 UI code generator 5.12.2
+# Created by: PyQt5 UI code generator 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
+
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -12,6 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(450, 200)
         MainWindow.setMinimumSize(QtCore.QSize(450, 200))
         MainWindow.setMaximumSize(QtCore.QSize(450, 400))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -24,6 +26,8 @@ class Ui_MainWindow(object):
         self.inputSelect.setObjectName("inputSelect")
         self.verticalLayout_2.addWidget(self.inputSelect)
         self.outputBox = QtWidgets.QTextEdit(self.centralwidget)
+        self.outputBox.setReadOnly(True)
+        self.outputBox.setAcceptRichText(False)
         self.outputBox.setObjectName("outputBox")
         self.verticalLayout_2.addWidget(self.outputBox)
         self.startButton = QtWidgets.QPushButton(self.centralwidget)
@@ -46,5 +50,3 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Knallmeister Audio Forwarder"))
         self.startButton.setText(_translate("MainWindow", "Start"))
-
-
