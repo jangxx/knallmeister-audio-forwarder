@@ -36,7 +36,16 @@ def getDevices():
     return (devices, selection_index)
 
 def startCapture(deviceIndex, log_function):
-    pass
+    info = audio.get_device_info_by_index(deviceIndex)
+
+    stream = audio.open(format = pyaudio.paFloat32,
+                        channels = 1,
+                        rate = int(info["defaultSampleRate"]),
+                        input = True,
+                        frames_per_buffer = 512,
+                        input_device_index = info["index"])
+
+    return stream
 
 def close():
     audio.terminate()

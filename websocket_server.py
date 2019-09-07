@@ -5,6 +5,7 @@ class WebsocketServer:
     def __init__(self, log_function):
         self.logFn = log_function
         self._server = None
+        self._clients = set()
 
     def startServer(self, port):
         self.logFn("Websocket Server started on port %s" % (port))
@@ -21,9 +22,17 @@ class WebsocketServer:
 
         try:
             async for msg in socket:
-                print(msg)
-                await socket.send(msg)
+                if msg == "register":
+                    self._clients.add(socket)
+                elif msg == "discover":
+                    await socket.send("success")
+
         except websockets.ConnectionClosedError:
             pass
         finally:
+            self._clients.discard(socket)
             self.logFn("Client disconnected")
+
+    async def sendToConnected(self, data):
+        if self._clients:
+            await asyncio.wait([ socket.send(data) for socket in self._clients ])

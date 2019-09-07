@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import *
 from ui_mainwindow import Ui_MainWindow
 from main_thread import ServerThread
-# import audio_capture
+import audio_capture
 import sys
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -13,12 +13,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.startButton.clicked.connect(self.startServer)
 
-        # audioDevices, deviceSelected = audio_capture.getDevices()
+        audioDevices, deviceSelected = audio_capture.getDevices()
 
-        # for d in audioDevices:
-        #     self.inputSelect.addItem(d["name"], d)
+        for d in audioDevices:
+            self.inputSelect.addItem(d["name"], d)
 
-        # self.inputSelect.setCurrentIndex(deviceSelected)
+        self.inputSelect.setCurrentIndex(deviceSelected)
 
         self.outputBox.append("Select the device of which you want to forward audio above and then click on 'Start'.")
 
@@ -26,9 +26,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.serverThread:
             return
 
-        print("startServer")
+        deviceIndex = self.inputSelect.currentData()["index"]
 
-        self.serverThread = ServerThread()
+        # print("startServer with device %s" % (deviceIndex))
+
+        self.serverThread = ServerThread(deviceIndex)
         self.serverThread.log.connect(self.log)
         self.serverThread.start()
     
@@ -41,7 +43,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not self.serverThread:
             return
 
-        print("stopServer")
+        # print("stopServer")
 
         self.serverThread.stop()
         self.serverThread = None
