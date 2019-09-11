@@ -1,14 +1,16 @@
 from PyQt5.QtCore import *
 import asyncio
 from websocket_server import WebsocketServer
-import audio_capture
+# import audio_capture
+import numpy as np
 
 class ServerThread(QThread):
     log = pyqtSignal(str)
 
-    def __init__(self, deviceIndex):
+    def __init__(self, device, speaker):
         QThread.__init__(self)
-        self.deviceIndex = deviceIndex
+        self.device = device
+        self.speaker = speaker
 
         self._ws = None
         self._loop = None
@@ -30,13 +32,14 @@ class ServerThread(QThread):
 
     async def runServer(self):
         # await self._stopSignal
-        stream = audio_capture.startCapture(self.deviceIndex, self.sendLog)
 
         while not self._stopSignal.done():
-            data = stream.read(512, exception_on_overflow=False)
+            self.speaker.play(np.zeros((512, 2)), samplerate=48000, channels=[0, 1])
+            data = self.device.record(samplerate=48000, numframes=512, channels=[0, 1])
+            # print(len(data[:,0].astype("float32").tobytes('C')))
 
             await asyncio.sleep(0) # yield control to asyncio
-            await self._ws.sendToConnected(data)
+            await self._ws.sendToConnected(data[:,0].astype("float32").tobytes('C'))
 
         await self._ws.stopServer()
 

@@ -1,8 +1,24 @@
 from PyQt5.QtWidgets import *
 from ui_mainwindow import Ui_MainWindow
 from main_thread import ServerThread
-import audio_capture
+# import audio_capture
 import sys
+import soundcard as sc
+
+def getDevices():
+    devices = []
+
+    for device in sc.all_microphones(include_loopback=True):
+        if not device.isloopback:
+            continue
+
+        devices.append({
+            "name": device.name,
+            "device": device,
+            "speaker": sc.get_speaker(device.id)
+        })
+
+    return devices
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -13,24 +29,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.startButton.clicked.connect(self.startServer)
 
-        audioDevices, deviceSelected = audio_capture.getDevices()
+        audioDevices = getDevices()
 
         for d in audioDevices:
             self.inputSelect.addItem(d["name"], d)
 
-        self.inputSelect.setCurrentIndex(deviceSelected)
-
-        self.outputBox.append("Select the device of which you want to forward audio above and then click on 'Start'.")
-
+        if len(audioDevices) > 0:
+            self.inputSelect.setCurrentIndex(0)
+            self.outputBox.append("Select the device of which you want to forward audio above and then click on 'Start'.")
+        else:
+            self.outputBox.append("No audio devices found. Please install one and then restart the application.")
+    
     def startServer(self, checked):
         if self.serverThread:
             return
 
-        deviceIndex = self.inputSelect.currentData()["index"]
+        device = self.inputSelect.currentData()["device"]
+        speaker = self.inputSelect.currentData()["speaker"]
 
         # print("startServer with device %s" % (deviceIndex))
 
-        self.serverThread = ServerThread(deviceIndex)
+        self.serverThread = ServerThread(device, speaker)
         self.serverThread.log.connect(self.log)
         self.serverThread.start()
     
@@ -63,5 +82,5 @@ if __name__ == '__main__':
     window.show()
 
     code = app.exec_()
-    audio_capture.close()
+    # audio_capture.close()
     sys.exit(code)
