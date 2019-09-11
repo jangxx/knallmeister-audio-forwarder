@@ -33,7 +33,7 @@ class ServerThread(QThread):
         stream = audio_capture.startCapture(self.deviceIndex, self.sendLog)
 
         while not self._stopSignal.done():
-            data = stream.read(512)
+            data = stream.read(512, exception_on_overflow=False)
 
             await asyncio.sleep(0) # yield control to asyncio
             await self._ws.sendToConnected(data)

@@ -1,5 +1,6 @@
 import pyaudio
 import asyncio
+import sys
 
 audio = pyaudio.PyAudio()
 
@@ -17,8 +18,12 @@ def getDevices():
     for i in range(audio.get_device_count()):
         devInfo = audio.get_device_info_by_index(i)
 
-        if devInfo["maxInputChannels"] == 0:
-            continue
+        if sys.platform == "win32":
+            if devInfo["maxOutputChannels"] == 0 or audio.get_host_api_info_by_index(devInfo["hostApi"])["name"].find("WASAPI") == -1:
+                continue
+        else:
+            if devInfo["maxInputChannels"] == 0:
+                continue
 
         if default_index < 0:
             default_index = i
@@ -38,12 +43,21 @@ def getDevices():
 def startCapture(deviceIndex, log_function):
     info = audio.get_device_info_by_index(deviceIndex)
 
-    stream = audio.open(format = pyaudio.paFloat32,
-                        channels = 1,
-                        rate = int(info["defaultSampleRate"]),
-                        input = True,
-                        frames_per_buffer = 512,
-                        input_device_index = info["index"])
+    if sys.platform == "win32":
+        stream = audio.open(format = pyaudio.paFloat32,
+                            channels = 1,
+                            rate = int(info["defaultSampleRate"]),
+                            input = True,
+                            frames_per_buffer = 512,
+                            input_device_index = info["index"],
+                            as_loopback = True)
+    else:
+        stream = audio.open(format = pyaudio.paFloat32,
+                            channels = 1,
+                            rate = int(info["defaultSampleRate"]),
+                            input = True,
+                            frames_per_buffer = 512,
+                            input_device_index = info["index"])
 
     return stream
 

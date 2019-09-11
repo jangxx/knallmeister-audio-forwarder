@@ -10,7 +10,7 @@ class WebsocketServer:
     def startServer(self, port):
         self.logFn("Websocket Server started on port %s" % (port))
 
-        self._server = asyncio.get_event_loop().run_until_complete(websockets.serve(self.connectionHandler, "localhost", port, reuse_port=True))
+        self._server = asyncio.get_event_loop().run_until_complete(websockets.serve(self.connectionHandler, "localhost", port))
 
     async def stopServer(self):
         self._server.close()
