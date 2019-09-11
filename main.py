@@ -63,5 +63,5 @@ if __name__ == '__main__':
     window.show()
 
     code = app.exec_()
-    # audio_capture.close()
+    audio_capture.close()
     sys.exit(code)
