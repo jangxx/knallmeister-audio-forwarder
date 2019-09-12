@@ -1,5 +1,7 @@
-PyAudio==0.2.11
+cffi==1.12.3
+numpy==1.17.2
+pycparser==2.19
 PyQt5==5.13.0
 PyQt5-sip==4.19.18
-websockets==8.0.2
 SoundCard==0.3.2
+websockets==8.0.2

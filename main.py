@@ -1,9 +1,9 @@
 from PyQt5.QtWidgets import *
 from ui_mainwindow import Ui_MainWindow
 from main_thread import ServerThread
-# import audio_capture
 import sys
 import soundcard as sc
+import multiprocessing
 
 def getDevices():
     devices = []
@@ -76,11 +76,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.outputBox.append(text)
 
 if __name__ == '__main__':
+    multiprocessing.freeze_support()
+
     app = QApplication(sys.argv)
 
     window = MainWindow()
     window.show()
 
     code = app.exec_()
-    # audio_capture.close()
     sys.exit(code)
