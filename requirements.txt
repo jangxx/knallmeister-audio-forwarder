@@ -4,4 +4,4 @@ pycparser==2.19
 PyQt5==5.13.0
 PyQt5-sip==4.19.18
 SoundCard==0.3.2
-websockets==8.0.2
+websockets==9.1
